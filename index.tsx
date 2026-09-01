@@ -130,6 +130,12 @@ export const settings = definePluginSettings({
         restartNeeded: false,
         default: false
     },
+    autoRejoin: {
+        type: OptionType.BOOLEAN,
+        description: "Automatically rejoin the VC of the followed user when you disconnect",
+        restartNeeded: false,
+        default: false
+    },
     followUserId: {
         type: OptionType.STRING,
         description: "Followed User ID",
@@ -311,6 +317,12 @@ export default definePlugin({
                     const isMe = userId === UserStore.getCurrentUser().id;
                     // move back if the setting is on and you were moved
                     if (settings.store.autoMoveBack && isMe && channelId && oldChannelId) {
+                        triggerFollow();
+                        continue;
+                    }
+
+                    // rejoin if the setting is on and you disconnected yourself
+                    if (settings.store.autoRejoin && isMe && !channelId && oldChannelId) {
                         triggerFollow();
                         continue;
                     }
